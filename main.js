@@ -25,17 +25,47 @@ function renderCountry(data, className = "") {
 
 // Our first AJAX call: XMLHttpRequest
 const getCountryData = function (country) {
-  const request = new XMLHttpRequest();
-  request.open(
-    "GET",
-    `https://countries-api-836d.onrender.com/countries/name/${country}`
-  );
-  request.send();
-  request.addEventListener("load", function () {
-    const [data] = JSON.parse(this.responseText);
-    // Render Country 1
-    renderCountry(data);
-  });
+  fetch(`https://countries-api-836d.onrender.com/countries/name/${country}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Country Not Found: ${response.status}`);
+      }
+      console.log(response);
+      return response.json();
+    })
+    .then((responseData) => {
+      console.log(responseData);
+      const [data] = responseData;
+      console.log(data);
+      renderCountry(data);
+      const [neighbor] = data.borders;
+      if (!neighbor) return;
+      return fetch(
+        `https://countries-api-836d.onrender.com/countries/alpha/${neighbor}`
+      );
+    })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Country Not Found: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log(data);
+      renderCountry(data, "neighbor");
+    });
+  // const request = new XMLHttpRequest();
+  // request.open(
+  //   "GET",
+  //   `https://countries-api-836d.onrender.com/countries/name/${country}`
+  // );
+  // request.send();
+  // request.addEventListener("load", function () {
+  //   const [data] = JSON.parse(this.responseText);
+
+  //   // Render Country 1
+  //   renderCountry(data);
+  // });
 };
 const getCountryAndNeighbor = function (country) {
   const request = new XMLHttpRequest();
@@ -66,4 +96,5 @@ const getCountryAndNeighbor = function (country) {
   });
 };
 
-getCountryAndNeighbor("usa");
+// getCountryAndNeighbor("usa");
+getCountryData("usa");

@@ -54,47 +54,5 @@ const getCountryData = function (country) {
       console.log(data);
       renderCountry(data, "neighbor");
     });
-  // const request = new XMLHttpRequest();
-  // request.open(
-  //   "GET",
-  //   `https://countries-api-836d.onrender.com/countries/name/${country}`
-  // );
-  // request.send();
-  // request.addEventListener("load", function () {
-  //   const [data] = JSON.parse(this.responseText);
-
-  //   // Render Country 1
-  //   renderCountry(data);
-  // });
 };
-const getCountryAndNeighbor = function (country) {
-  const request = new XMLHttpRequest();
-  request.open(
-    "GET",
-    `https://countries-api-836d.onrender.com/countries/name/${country}`
-  );
-  request.send();
-  request.addEventListener("load", function () {
-    const [data] = JSON.parse(this.responseText);
-    // Render Country 1
-    renderCountry(data);
-    const [neighbor] = data.borders;
-    console.log(neighbor);
-    if (!neighbor) return;
-    // AJAX Call Country 2
-    const request2 = new XMLHttpRequest();
-    request2.open(
-      "GET",
-      `https://countries-api-836d.onrender.com/countries/alpha/${neighbor}`
-    );
-    request2.send();
-    request2.addEventListener("load", function () {
-      const data2 = JSON.parse(this.responseText);
-      console.log(data2);
-      renderCountry(data2, "neighbor");
-    });
-  });
-};
-
-// getCountryAndNeighbor("usa");
 getCountryData("usa");

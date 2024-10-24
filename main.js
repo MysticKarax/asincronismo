@@ -18,51 +18,48 @@ function renderCountry(data, className = "") {
   </article>
   `;
   countriesContainer.insertAdjacentHTML("beforeend", html);
-  // countriesContainer.style.opacity = 1;
 }
 
 function renderError(message) {
   countriesContainer.insertAdjacentText("beforeend", message);
 }
 
-// Deconstruir la propiedad borders
-
-function getJSON(url, errorMsg = "Something Went Wrong") {
-  return fetch(url).then((response) => {
-    if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
+async function getJSON(url, errorMsg = "Something Went Wrong") {
+  try {
+    const response = await fetch(url);
     return response.json();
-  });
+  } catch (errorMsg) {
+    if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
+  }
 }
 
-const getCountryData = function (country) {
-  getJSON(
-    `https://countries-api-836d.onrender.com/countries/name/${country}`,
-    `Country Not Found`
-  )
-    .then((responseData) => {
-      const [data] = responseData;
+const getCountryData = async function (country) {
+  try {
+    const response = await getJSON(
+      `https://countries-api-836d.onrender.com/countries/name/${country}`,
+      `Country Not Found`
+    );
 
-      renderCountry(data);
-      const [neighbor] = data.borders;
-      // const [neighbor] = "JAGUAR";
-      if (!neighbor) return;
+    const [data] = response;
 
-      return getJSON(
-        `https://countries-api-836d.onrender.com/countries/alpha/${neighbor}`,
-        `Neighbor Country Not Found`
-      );
-    })
-    .then((data) => {
-      renderCountry(data, "neighbor");
-    })
-    .catch((error) => {
-      renderError(error.message);
-    })
-    .finally(() => {
-      countriesContainer.style.opacity = 1;
-    });
+    renderCountry(data);
+    const [neighbor] = data.borders;
+
+    // const [neighbor] = "JAGUAR";
+    if (!neighbor) return;
+
+    const neighborData = await getJSON(
+      `https://countries-api-836d.onrender.com/countries/alpha/${neighbor}`,
+      `Neighbor Country Not Found`
+    );
+
+    renderCountry(neighborData, "neighbor");
+
+    countriesContainer.style.opacity = 1;
+  } catch (error) {
+    renderError(error.message);
+  }
 };
 getCountryData("usa");
 
-// Convertir todo a async/await
 // promise settle all

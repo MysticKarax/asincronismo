@@ -18,41 +18,51 @@ function renderCountry(data, className = "") {
   </article>
   `;
   countriesContainer.insertAdjacentHTML("beforeend", html);
-  countriesContainer.style.opacity = 1;
+  // countriesContainer.style.opacity = 1;
+}
+
+function renderError(message) {
+  countriesContainer.insertAdjacentText("beforeend", message);
 }
 
 // Deconstruir la propiedad borders
 
-// Our first AJAX call: XMLHttpRequest
+function getJSON(url, errorMsg = "Something Went Wrong") {
+  return fetch(url).then((response) => {
+    if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
+    return response.json();
+  });
+}
+
 const getCountryData = function (country) {
-  fetch(`https://countries-api-836d.onrender.com/countries/name/${country}`)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Country Not Found: ${response.status}`);
-      }
-      console.log(response);
-      return response.json();
-    })
+  getJSON(
+    `https://countries-api-836d.onrender.com/countries/name/${country}`,
+    `Country Not Found`
+  )
     .then((responseData) => {
-      console.log(responseData);
       const [data] = responseData;
-      console.log(data);
+
       renderCountry(data);
       const [neighbor] = data.borders;
+      // const [neighbor] = "JAGUAR";
       if (!neighbor) return;
-      return fetch(
-        `https://countries-api-836d.onrender.com/countries/alpha/${neighbor}`
+
+      return getJSON(
+        `https://countries-api-836d.onrender.com/countries/alpha/${neighbor}`,
+        `Neighbor Country Not Found`
       );
     })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Country Not Found: ${response.status}`);
-      }
-      return response.json();
-    })
     .then((data) => {
-      console.log(data);
       renderCountry(data, "neighbor");
+    })
+    .catch((error) => {
+      renderError(error.message);
+    })
+    .finally(() => {
+      countriesContainer.style.opacity = 1;
     });
 };
 getCountryData("usa");
+
+// Convertir todo a async/await
+// promise settle all

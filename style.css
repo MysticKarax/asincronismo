@@ -6,6 +6,7 @@
 
 html {
   box-sizing: border-box;
+  color-scheme: dark light;
 }
 
 :root {
@@ -165,6 +166,18 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+.btn-country {
+  color: white;
+  background-color: orangered;
+  padding: 2rem 5rem;
+  margin-top: 3rem;
+  font-size: 2rem;
+}
+
+.btn-country:hover {
+  opacity: 0.8;
 }
 
 @media (prefers-color-scheme: light) {
